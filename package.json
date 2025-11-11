@@ -9,9 +9,12 @@
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "hono": "^4.10.4",
-    "prisma": "^6.19.0"
+    "prisma": "^6.19.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251109.0",
+    "typescript": "^5.9.3",
     "wrangler": "^4.4.0"
   }
 }
