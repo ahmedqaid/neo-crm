@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Lead {
+  id             String            @id @default(uuid())
+  fullName       String
+  country        String
+  email          String             @unique
+  phone          String
+  programType    String
+  fieldOfStudy   String?
+  source         String?
+  status         LeadStatus         @default(NEW)
+  assignedToId   String?
+  notes          String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  assignedTo     Counselor?         @relation(fields: [assignedToId], references: [id])
+  stageHistory   LeadStageHistory[]
+  activities     LeadActivity[]
+  documents      LeadDocument[]
+
+  @@index([status])
+  @@index([assignedToId])
+}
+
+model Counselor {
+  id              String              @id @default(uuid())
+  name            String
+  email           String               @unique
+  role            CounselorRole        @default(COUNSELOR)
+  leads           Lead[]
+  stageHistories  LeadStageHistory[]   @relation("StageChangedBy")
+  activities      LeadActivity[]       @relation("ActivityBy")
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+}
+
+model LeadStageHistory {
+  id          String        @id @default(uuid())
+  leadId      String
+  fromStage   LeadStatus?
+  toStage     LeadStatus
+  changedById String?       
+  note        String?
+  changedAt   DateTime      @default(now())
+
+  lead        Lead          @relation(fields: [leadId], references: [id])
+  counselor   Counselor?    @relation("StageChangedBy", fields: [changedById], references: [id])
+
+  @@index([leadId])
+  @@index([toStage])
+}
+
+model LeadActivity {
+  id           String        @id @default(uuid())
+  leadId       String
+  counselorId  String?
+  type         ActivityType
+  content      String
+  createdAt    DateTime      @default(now())
+
+  lead         Lead          @relation(fields: [leadId], references: [id])
+  counselor    Counselor?    @relation("ActivityBy", fields: [counselorId], references: [id])
+
+  @@index([leadId])
+}
+
+model LeadDocument {
+  id         String      @id @default(uuid())
+  leadId     String
+  fileName   String
+  fileUrl    String
+  uploadedAt DateTime    @default(now())
+
+  lead       Lead        @relation(fields: [leadId], references: [id])
+  @@index([leadId])
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  IN_PROGRESS
+  OFFER_LETTER_REQUESTED
+  OFFER_LETTER_RECEIVED
+  VISA_IN_PROCESS
+  EVAL_GRANTED
+  SEV_PENDING
+  REGISTERED
+  ENROLLED
+  LOST
+}
+
+enum ActivityType {
+  NOTE
+  CALL
+  MESSAGE
+  EMAIL
+  REMINDER
+}
+
+enum CounselorRole {
+  ADMIN
+  COUNSELOR
+}
