@@ -7,13 +7,18 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.4",
     "@prisma/client": "^6.19.0",
+    "@supabase/supabase-js": "^2.81.1",
     "hono": "^4.10.4",
+    "jose": "^6.1.1",
     "prisma": "^6.19.0",
+    "supabase": "^2.58.5",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251109.0",
+    "@types/node": "^24.10.1",
     "typescript": "^5.9.3",
     "wrangler": "^4.4.0"
   }
